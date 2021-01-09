@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+
+<html lang="en-US">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>continue</title>
+  <script src="../jsgame0.js"></script>
+  <style type="text/css" media="screen">
+body {
+  background-color: white;
+  color: black;
+}
+.hidden {
+  display: none;
+}
+#original {
+  margin-left: 1em;
+}
+  </style>
+</head>
+
+<body>
+
+<main>
+<h1>continue</h1>
+
+<canvas id="screen">
+The game screen appears here if your browser supports the Canvas API.
+</canvas>
+<section id="controls">
+  <button type="button" id="reset">Reset</button>
+  <button type="button" id="pause">Pause</button>
+</section>
+
+<h2>Attribution</h2>
+
+<p><a href="https://wireframe.raspberrypi.org/issues/19">Create your own continue screen, page 40-41, by Rik Cross</a>.</p>
+
+<p>Licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/legalcode">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported</a>.</p>
+
+<h2>Original Python code</h2>
+
+<pre id="original"><code>
+class State():
+    def __init__(self):
+        # a dictionary containing possible states,
+        # and rules for moving to them
+        self.rules = {}
+    # adds a state:rule pair to the &#x27;rules&#x27; dictionary
+    def addrule(self, state, rule):
+        self.rules[state] = rule
+    def update(self):
+        pass
+    def draw(self):
+        pass
+
+class StateMachine():
+    def __init__(self):
+        self.current = None
+        self.frame = 0
+    def update(self):
+        # only update current state if one exists
+        if self.current == None:
+            return
+        # increment the frame
+        self.frame += 0.01
+        # if any rule evaluates to &#x27;True&#x27; then
+        # switch to that state (and reset the timer)
+        for s, r in self.current.rules.items():
+            if r():
+                self.current = s
+                self.frame = 0
+        # call the current state&#x27;s update() method
+        self.current.update()
+    # call the current state&#x27;s update() method
+    def draw(self):
+        if self.current == None:
+            return
+        self.current.draw()
+
+sm = StateMachine()
+
+def drawtitle():
+    screen.draw.text(&quot;Title screen&quot;, (50, 50), fontsize=40, color=&quot;white&quot;)
+    screen.draw.text(&quot;Press [space] to start&quot;, (50, 80), fontsize=40, color=&quot;white&quot;)
+titlescreen = State()
+titlescreen.draw = drawtitle
+
+def drawgame():
+    screen.draw.text(&quot;Game screen&quot;, (50, 50), fontsize=40, color=&quot;white&quot;)
+    screen.draw.text(&quot;Press [e] to end game&quot;, (50, 80), fontsize=40, color=&quot;white&quot;)
+gamescreen = State()
+gamescreen.draw = drawgame
+
+def drawcontinue():
+    screen.draw.text(&quot;Continue  screen&quot;, (50, 50), fontsize=40, color=&quot;white&quot;)
+    screen.draw.text(&quot;Press [space] to play again&quot;, (50, 80), fontsize=40, color=&quot;white&quot;)
+    # display the time remaining until 10 seconds have passed
+    screen.draw.text(str(int(10 - sm.frame)+1), (50, 110), fontsize=40, color=&quot;white&quot;)
+continuescreen = State()
+continuescreen.draw = drawcontinue
+
+titlescreen.addrule(gamescreen, lambda: keyboard.space)
+gamescreen.addrule(continuescreen, lambda: keyboard.e)
+continuescreen.addrule(titlescreen, lambda: sm.frame &gt;= 10)
+continuescreen.addrule(gamescreen, lambda: keyboard.space)
+
+sm.current = titlescreen
+
+def update():
+    sm.update()
+
+def draw():
+    screen.clear()
+    sm.draw()
+</code></pre>
+</main>
+
+<script>
+class State {
+  constructor() {
+    // a dictionary containing possible states,
+    // and rules for moving to them
+    this.rules = new Map();
+  }
+  // adds a state:rule pair to the 'rules' dictionary
+  addrule(state, rule) {
+    this.rules.set(state, rule);
+  }
+  update() {
+  }
+  draw() {
+  }
+}
+
+class StateMachine {
+  constructor() {
+    this.current = null;
+    this.frame = 0;
+  }
+  update() {
+    // only update current state if one exists
+    if (this.current == null) {
+      return;
+    }
+    // increment the frame
+    this.frame += 0.01;
+    // if any rule evaluates to 'True' then
+    // switch to that state (and reset the timer)
+    for (let [s, r] of this.current.rules) {
+      if (r()) {
+        this.current = s;
+        this.frame = 0;
+      }
+    }
+    // call the current state's update() method
+    this.current.update();
+  }
+  // call the current state's update() method
+  draw() {
+    if (this.current == null) {
+      return;
+    }
+    this.current.draw();
+  }
+}
+
+sm = new StateMachine();
+
+function drawtitle() {
+  screen.draw.text("Title screen", {
+    pos: [50, 50],
+    fontsize: 40,
+    color: "white"
+  });
+  screen.draw.text("Press [space] to start", {
+    pos: [50, 80],
+    fontsize: 40,
+    color: "white"
+  });
+}
+titlescreen = new State();
+titlescreen.draw = drawtitle;
+
+function drawgame() {
+  screen.draw.text("Game screen", {
+    pos: [50, 50],
+    fontsize: 40,
+    color: "white"
+  });
+  screen.draw.text("Press [e] to end game", {
+    pos: [50, 80],
+    fontsize: 40,
+    color: "white"
+  });
+}
+gamescreen = new State();
+gamescreen.draw = drawgame;
+
+function drawcontinue() {
+  screen.draw.text("Continue  screen", {
+    pos: [50, 50],
+    fontsize: 40,
+    color: "white"
+  });
+  screen.draw.text("Press [space] to play again", {
+    pos: [50, 80],
+    fontsize: 40,
+    color: "white"
+  });
+  // display the time remaining until 10 seconds have passed
+  screen.draw.text(Math.trunc((10 - sm.frame) + 1).toFixed(0), {
+    pos: [50, 110],
+    fontsize: 40,
+    color: "white"
+  });
+}
+continuescreen = new State();
+continuescreen.draw = drawcontinue;
+
+titlescreen.addrule(gamescreen, function() { return keyboard[keys.SPACE]; });
+gamescreen.addrule(continuescreen, function() { return keyboard[keys.E]; });
+continuescreen.addrule(titlescreen, function() { return sm.frame >= 10; });
+continuescreen.addrule(gamescreen, function() { return keyboard[keys.SPACE]; });
+
+sm.current = titlescreen;
+
+function update() {
+  sm.update();
+}
+
+function draw() {
+  screen.clear();
+  sm.draw();
+}
+
+window.addEventListener('load', (event) => {
+  screen.set_mode('#screen', '#reset', '#pause');
+});
+</script>
+</body>
+
+</html>
