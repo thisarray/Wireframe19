@@ -212,7 +212,7 @@ function drawcontinue() {
     color: "white"
   });
   // display the time remaining until 10 seconds have passed
-  screen.draw.text((Math.trunc(10 - sm.frame) + 1).toFixed(0), {
+  screen.draw.text((Math.trunc(10 - sm.frame) + 1).toFixed(), {
     pos: [50, 110],
     fontsize: 40,
     color: "white"
@@ -221,10 +221,10 @@ function drawcontinue() {
 continuescreen = new State();
 continuescreen.draw = drawcontinue;
 
-titlescreen.addrule(gamescreen, function() { return keyboard[keys.SPACE]; });
-gamescreen.addrule(continuescreen, function() { return keyboard[keys.E]; });
-continuescreen.addrule(titlescreen, function() { return sm.frame >= 10; });
-continuescreen.addrule(gamescreen, function() { return keyboard[keys.SPACE]; });
+titlescreen.addrule(gamescreen, () => keyboard[keys.SPACE]);
+gamescreen.addrule(continuescreen, () => keyboard[keys.E]);
+continuescreen.addrule(titlescreen, () => (sm.frame >= 10));
+continuescreen.addrule(gamescreen, () => keyboard[keys.SPACE]);
 
 sm.current = titlescreen;
 
